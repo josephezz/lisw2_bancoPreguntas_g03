@@ -1,6 +1,6 @@
 target/
 .idea/
-.vscode/
+.vscode
 *.class
 *.log
 .DS_Store
