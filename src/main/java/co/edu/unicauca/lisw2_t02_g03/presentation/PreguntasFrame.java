@@ -39,12 +39,20 @@ public class PreguntasFrame extends JFrame {
     private final JComboBox<EstadoPregunta> comboNuevoEstado = new JComboBox<>(EstadoPregunta.values());
     private final JTextField campoId = crearCampoSoloLectura();
     private final JTextField campoNombre = crearCampoSoloLectura();
+    private final JTextField campoTipo = crearCampoSoloLectura();
+    private final JTextField campoCompetencia = crearCampoSoloLectura();
+    private final JTextField campoCategoria = crearCampoSoloLectura();
+    private final JTextField campoDificultad = crearCampoSoloLectura();
+    private final JTextField campoMultimedia = crearCampoSoloLectura();
+    private final JTextField campoAutor = crearCampoSoloLectura();
+    private final JTextField campoObservaciones = crearCampoSoloLectura();
     private final JTextField campoRespuesta = crearCampoSoloLectura();
     private final JTextField campoEstadoActual = crearCampoSoloLectura();
     private final JTextArea areaPregunta = crearAreaSoloLectura(4);
     private final JTextArea areaOpciones = crearAreaSoloLectura(7);
     private final JButton botonCargar = new JButton("Cargar pregunta");
     private final JButton botonActualizar = new JButton("Actualizar estado");
+    private final JButton botonRefrescar = new JButton("Refrescar");
 
     private boolean observadoresRegistrados;
 
@@ -64,8 +72,8 @@ public class PreguntasFrame extends JFrame {
     private void configurarVentana() {
         setTitle("Banco de Preguntas Saber Pro - Gestión de preguntas");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setMinimumSize(new Dimension(900, 610));
-        setSize(1080, 720);
+        setMinimumSize(new Dimension(950, 680));
+        setSize(1150, 780);
         setLocationRelativeTo(null);
         setResizable(true);
     }
@@ -90,6 +98,10 @@ public class PreguntasFrame extends JFrame {
         comboPreguntas.addActionListener(e -> cargarSeleccion());
         botonCargar.addActionListener(e -> cargarSeleccion());
         botonActualizar.addActionListener(e -> actualizarEstado());
+        botonRefrescar.addActionListener(e -> {
+            recargarBanco(null);
+            controller.refrescarVistasObservadoras();
+        });
     }
 
     private JPanel crearPanelSeleccion() {
@@ -100,6 +112,7 @@ public class PreguntasFrame extends JFrame {
         panel.add(new JLabel("Pregunta:"));
         panel.add(comboPreguntas);
         panel.add(botonCargar);
+        panel.add(botonRefrescar);
         return panel;
     }
 
@@ -109,16 +122,23 @@ public class PreguntasFrame extends JFrame {
 
         JPanel campos = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 6, 4, 6);
+        gbc.insets = new Insets(3, 6, 3, 6);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
         int fila = 0;
         agregarFila(campos, gbc, fila++, "Id:", campoId);
         agregarFila(campos, gbc, fila++, "Nombre:", campoNombre);
+        agregarFila(campos, gbc, fila++, "Tipo:", campoTipo);
         agregarArea(campos, gbc, fila++, "Pregunta:", areaPregunta);
         agregarArea(campos, gbc, fila++, "Opciones:", areaOpciones);
         agregarFila(campos, gbc, fila++, "Respuesta correcta:", campoRespuesta);
+        agregarFila(campos, gbc, fila++, "Competencia:", campoCompetencia);
+        agregarFila(campos, gbc, fila++, "Categoría:", campoCategoria);
+        agregarFila(campos, gbc, fila++, "Dificultad:", campoDificultad);
+        agregarFila(campos, gbc, fila++, "Recurso multimedia:", campoMultimedia);
+        agregarFila(campos, gbc, fila++, "Autor:", campoAutor);
+        agregarFila(campos, gbc, fila++, "Observaciones:", campoObservaciones);
         agregarFila(campos, gbc, fila++, "Estado actual:", campoEstadoActual);
 
         gbc.gridx = 0;
@@ -195,11 +215,18 @@ public class PreguntasFrame extends JFrame {
     private void mostrarPregunta(Pregunta pregunta) {
         campoId.setText(pregunta.getId());
         campoNombre.setText(pregunta.getNombre());
+        campoTipo.setText(pregunta.getTipo() != null ? pregunta.getTipo() : "");
         areaPregunta.setText(pregunta.getEnunciado());
         areaPregunta.setCaretPosition(0);
-        areaOpciones.setText(pregunta.getOpciones().comoTexto());
+        areaOpciones.setText(pregunta.getOpciones() != null ? pregunta.getOpciones().comoTexto() : "");
         areaOpciones.setCaretPosition(0);
-        campoRespuesta.setText(pregunta.getRespuestaCorrecta());
+        campoRespuesta.setText(pregunta.getRespuestaCorrecta() != null ? pregunta.getRespuestaCorrecta() : "");
+        campoCompetencia.setText(pregunta.getCompetencia() != null ? pregunta.getCompetencia() : "");
+        campoCategoria.setText(pregunta.getCategoria() != null ? pregunta.getCategoria() : "");
+        campoDificultad.setText(pregunta.getNivelDificultad() != null ? pregunta.getNivelDificultad() : "");
+        campoMultimedia.setText(pregunta.getRecursoMultimedia() != null ? pregunta.getRecursoMultimedia() : "");
+        campoAutor.setText(pregunta.getAutorLogin() != null ? pregunta.getAutorLogin() : "");
+        campoObservaciones.setText(pregunta.getObservaciones() != null ? pregunta.getObservaciones() : "");
         campoEstadoActual.setText(pregunta.getEstado().toString());
         comboNuevoEstado.setSelectedItem(pregunta.getEstado());
     }
@@ -240,9 +267,16 @@ public class PreguntasFrame extends JFrame {
     private void limpiarFormulario(String mensaje) {
         campoId.setText("");
         campoNombre.setText("");
+        campoTipo.setText("");
         areaPregunta.setText(mensaje);
         areaOpciones.setText("");
         campoRespuesta.setText("");
+        campoCompetencia.setText("");
+        campoCategoria.setText("");
+        campoDificultad.setText("");
+        campoMultimedia.setText("");
+        campoAutor.setText("");
+        campoObservaciones.setText("");
         campoEstadoActual.setText("");
     }
 

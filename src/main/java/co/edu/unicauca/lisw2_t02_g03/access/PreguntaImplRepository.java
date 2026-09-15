@@ -59,6 +59,39 @@ public class PreguntaImplRepository implements PreguntaRepository {
         return true;
     }
 
+    @Override
+    public boolean guardar(Pregunta pregunta) {
+        if (pregunta == null) {
+            return false;
+        }
+        if (preguntas.containsKey(pregunta.getId())) {
+            return false; // No permite duplicados
+        }
+        preguntas.put(pregunta.getId(), pregunta);
+        return true;
+    }
+
+    @Override
+    public List<Pregunta> listarPorEstado(EstadoPregunta estado) {
+        if (estado == null) {
+            return List.of();
+        }
+        return preguntas.values().stream()
+                .filter(p -> p.getEstado() == estado)
+                .toList();
+    }
+
+    @Override
+    public List<Pregunta> listarPorAutor(String autorLogin) {
+        if (autorLogin == null || autorLogin.isBlank()) {
+            return List.of();
+        }
+        String login = autorLogin.trim();
+        return preguntas.values().stream()
+                .filter(p -> login.equals(p.getAutorLogin()))
+                .toList();
+    }
+
     private static List<Pregunta> crearBancoInicial() {
         return List.of(
                 new Pregunta(

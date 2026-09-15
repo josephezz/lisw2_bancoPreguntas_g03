@@ -167,6 +167,8 @@ public class GraficaPastelView extends JPanel implements Observer<EstadisticasPr
         EnumMap<EstadoPregunta, Color> colores = new EnumMap<>(EstadoPregunta.class);
         colores.put(EstadoPregunta.BORRADOR, new Color(230, 126, 34));
         colores.put(EstadoPregunta.PENDIENTE_REVISION, new Color(52, 152, 219));
+        colores.put(EstadoPregunta.APROBADA, new Color(39, 174, 96));
+        colores.put(EstadoPregunta.RECHAZADA, new Color(231, 76, 60));
         colores.put(EstadoPregunta.ELIMINADA, new Color(192, 57, 43));
         return colores;
     }

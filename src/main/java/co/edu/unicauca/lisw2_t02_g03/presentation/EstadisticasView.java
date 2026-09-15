@@ -17,17 +17,23 @@ public class EstadisticasView extends JPanel implements Observer<EstadisticasPre
 
     private final JLabel borrador = new JLabel("0");
     private final JLabel pendiente = new JLabel("0");
+    private final JLabel aprobada = new JLabel("0");
+    private final JLabel rechazada = new JLabel("0");
     private final JLabel eliminada = new JLabel("0");
     private final JLabel total = new JLabel("0");
 
     public EstadisticasView() {
         setBorder(BorderFactory.createTitledBorder("Preguntas por estado"));
-        setLayout(new GridLayout(4, 2, 8, 5));
+        setLayout(new GridLayout(6, 2, 8, 5));
 
         add(new JLabel("Borrador:"));
         add(borrador);
         add(new JLabel("Pendiente de revisión:"));
         add(pendiente);
+        add(new JLabel("Aprobada:"));
+        add(aprobada);
+        add(new JLabel("Rechazada:"));
+        add(rechazada);
         add(new JLabel("Eliminada:"));
         add(eliminada);
         add(new JLabel("Total:"));
@@ -43,6 +49,8 @@ public class EstadisticasView extends JPanel implements Observer<EstadisticasPre
         Runnable actualizacion = () -> {
             borrador.setText(Long.toString(estadisticas.getConteo(EstadoPregunta.BORRADOR)));
             pendiente.setText(Long.toString(estadisticas.getConteo(EstadoPregunta.PENDIENTE_REVISION)));
+            aprobada.setText(Long.toString(estadisticas.getConteo(EstadoPregunta.APROBADA)));
+            rechazada.setText(Long.toString(estadisticas.getConteo(EstadoPregunta.RECHAZADA)));
             eliminada.setText(Long.toString(estadisticas.getConteo(EstadoPregunta.ELIMINADA)));
             total.setText(Long.toString(estadisticas.getTotal()));
         };

@@ -1,11 +1,13 @@
 package co.edu.unicauca.lisw2_t02_g03.domain;
 
 /**
- * Estados exigidos por el alcance específico del Taller 04.
+ * Estados del ciclo de vida de una pregunta en el Banco Saber Pro.
  */
 public enum EstadoPregunta {
     BORRADOR("Borrador"),
     PENDIENTE_REVISION("Pendiente de revisión"),
+    APROBADA("Aprobada"),
+    RECHAZADA("Rechazada"),
     ELIMINADA("Eliminada");
 
     private final String etiqueta;

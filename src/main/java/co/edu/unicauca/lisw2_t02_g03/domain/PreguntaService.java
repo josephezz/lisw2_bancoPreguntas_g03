@@ -36,6 +36,37 @@ public class PreguntaService implements Subject<EstadisticasPreguntas> {
         return repository.buscarPorId(id.trim());
     }
 
+    /**
+     * Almacena una nueva pregunta en el banco y notifica observadores.
+     *
+     * @param pregunta pregunta a guardar.
+     * @return {@code true} si se guardó correctamente.
+     */
+    public boolean guardarPregunta(Pregunta pregunta) {
+        if (pregunta == null) {
+            return false;
+        }
+        boolean guardada = repository.guardar(pregunta);
+        if (guardada) {
+            notificarObservadores();
+        }
+        return guardada;
+    }
+
+    /**
+     * Lista preguntas filtradas por estado.
+     */
+    public List<Pregunta> listarPorEstado(EstadoPregunta estado) {
+        return repository.listarPorEstado(estado);
+    }
+
+    /**
+     * Lista preguntas creadas por un autor específico.
+     */
+    public List<Pregunta> listarPorAutor(String autorLogin) {
+        return repository.listarPorAutor(autorLogin);
+    }
+
     public ResultadoCambioEstado cambiarEstado(String id, EstadoPregunta nuevoEstado) {
         if (id == null || id.isBlank() || nuevoEstado == null) {
             return ResultadoCambioEstado.ENTRADA_INVALIDA;
@@ -52,6 +83,46 @@ public class PreguntaService implements Subject<EstadisticasPreguntas> {
         }
 
         boolean actualizada = repository.actualizar(actual.conEstado(nuevoEstado));
+        if (!actualizada) {
+            return ResultadoCambioEstado.PREGUNTA_NO_ENCONTRADA;
+        }
+
+        notificarObservadores();
+        return ResultadoCambioEstado.ACTUALIZADO;
+    }
+
+    /**
+     * Envía una pregunta a revisión (cambia estado a PENDIENTE_REVISION).
+     */
+    public ResultadoCambioEstado enviarARevision(String id) {
+        return cambiarEstado(id, EstadoPregunta.PENDIENTE_REVISION);
+    }
+
+    /**
+     * Aprueba una pregunta (cambia estado a APROBADA).
+     */
+    public ResultadoCambioEstado aprobarPregunta(String id) {
+        return cambiarEstado(id, EstadoPregunta.APROBADA);
+    }
+
+    /**
+     * Rechaza una pregunta con observaciones (cambia estado a RECHAZADA).
+     */
+    public ResultadoCambioEstado rechazarPregunta(String id, String observaciones) {
+        if (id == null || id.isBlank()) {
+            return ResultadoCambioEstado.ENTRADA_INVALIDA;
+        }
+
+        Optional<Pregunta> encontrada = repository.buscarPorId(id.trim());
+        if (encontrada.isEmpty()) {
+            return ResultadoCambioEstado.PREGUNTA_NO_ENCONTRADA;
+        }
+
+        Pregunta actual = encontrada.get();
+        Pregunta rechazada = actual.conEstado(EstadoPregunta.RECHAZADA)
+                .conObservaciones(observaciones);
+
+        boolean actualizada = repository.actualizar(rechazada);
         if (!actualizada) {
             return ResultadoCambioEstado.PREGUNTA_NO_ENCONTRADA;
         }
