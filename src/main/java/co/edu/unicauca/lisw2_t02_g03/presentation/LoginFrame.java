@@ -5,8 +5,12 @@ import co.edu.unicauca.lisw2_t02_g03.services.AuthServices;
 import co.edu.unicauca.lisw2_t02_g03.services.UsuarioServices;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * Ventana de inicio de sesión con diseño universitario moderno institucional (Universidad del Cauca).
+ */
 public class LoginFrame extends JFrame {
 
     private final AuthServices authServices;
@@ -15,6 +19,7 @@ public class LoginFrame extends JFrame {
 
     private JTextField txtLogin;
     private JPasswordField txtPassword;
+    private JLabel lblError;
 
     public LoginFrame(
             AuthServices authServices,
@@ -34,241 +39,175 @@ public class LoginFrame extends JFrame {
     }
 
     private void configurarVentana() {
-
-        setTitle("Sistema de Usuarios");
-        setSize(450, 420);
+        setTitle("Banco de Preguntas Saber Pro - Universidad del Cauca");
+        setSize(480, 560);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+        getContentPane().setBackground(UITheme.COLOR_BG);
     }
 
     private void crearInterfaz() {
+        setLayout(new GridBagLayout());
 
-        JPanel panelPrincipal = new JPanel();
-        panelPrincipal.setLayout(new BorderLayout(10, 10));
-        panelPrincipal.setBorder(
-                BorderFactory.createEmptyBorder(
-                        25, 35, 25, 35
-                )
-        );
+        // Tarjeta central elevada
+        ModernCard card = new ModernCard(new BorderLayout(0, 16));
+        card.setPreferredSize(new Dimension(410, 480));
+        card.setBorder(new EmptyBorder(26, 28, 24, 28));
 
-        // ==============================
-        // TITULO
-        // ==============================
+        // ==========================================
+        // CABECERA CON IDENTIDAD INSTITUCIONAL
+        // ==========================================
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setOpaque(false);
 
-        JLabel lblTitulo =
-                new JLabel(
-                        "SISTEMA DE USUARIOS",
-                        SwingConstants.CENTER
-                );
+        // Insignia / Emblema institucional
+        JLabel lblEmblema = new JLabel("🏛️ UNIVERSIDAD DEL CAUCA");
+        lblEmblema.setFont(UITheme.FONT_SMALL_BOLD);
+        lblEmblema.setForeground(UITheme.COLOR_PRIMARY);
+        lblEmblema.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        lblTitulo.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        24
-                )
-        );
+        JLabel lblTitulo = new JLabel("Banco de Preguntas");
+        lblTitulo.setFont(UITheme.FONT_TITLE_LARGE);
+        lblTitulo.setForeground(UITheme.COLOR_PRIMARY_DARK);
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblSubtitulo =
-                new JLabel(
-                        "Inicio de sesión",
-                        SwingConstants.CENTER
-                );
+        JLabel lblSaberPro = new JLabel("Módulo Saber Pro");
+        lblSaberPro.setFont(UITheme.FONT_TITLE_SMALL);
+        lblSaberPro.setForeground(UITheme.COLOR_SECONDARY);
+        lblSaberPro.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        lblSubtitulo.setFont(
-                new Font(
-                        "Arial",
-                        Font.PLAIN,
-                        16
-                )
-        );
+        JLabel lblSubtitulo = new JLabel("Ingrese sus credenciales para acceder a la plataforma");
+        lblSubtitulo.setFont(UITheme.FONT_SMALL);
+        lblSubtitulo.setForeground(UITheme.COLOR_TEXT_MUTED);
+        lblSubtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel panelTitulo =
-                new JPanel(new GridLayout(2, 1));
+        headerPanel.add(lblEmblema);
+        headerPanel.add(Box.createVerticalStrut(4));
+        headerPanel.add(lblTitulo);
+        headerPanel.add(lblSaberPro);
+        headerPanel.add(Box.createVerticalStrut(6));
+        headerPanel.add(lblSubtitulo);
 
-        panelTitulo.add(lblTitulo);
-        panelTitulo.add(lblSubtitulo);
+        card.add(headerPanel, BorderLayout.NORTH);
 
-        panelPrincipal.add(
-                panelTitulo,
-                BorderLayout.NORTH
-        );
+        // ==========================================
+        // FORMULARIO DE ACCESO
+        // ==========================================
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setOpaque(false);
 
-        // ==============================
-        // FORMULARIO
-        // ==============================
+        JLabel lblLogin = new JLabel("Usuario o Login:");
+        lblLogin.setFont(UITheme.FONT_REGULAR_BOLD);
+        lblLogin.setForeground(UITheme.COLOR_TEXT_PRIMARY);
+        lblLogin.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JPanel panelFormulario =
-                new JPanel(
-                        new GridLayout(
-                                4,
-                                1,
-                                5,
-                                5
-                        )
-                );
+        txtLogin = new JTextField();
+        UITheme.styleTextField(txtLogin);
+        txtLogin.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        txtLogin.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel lblLogin =
-                new JLabel("Usuario:");
+        JLabel lblPassword = new JLabel("Contraseña:");
+        lblPassword.setFont(UITheme.FONT_REGULAR_BOLD);
+        lblPassword.setForeground(UITheme.COLOR_TEXT_PRIMARY);
+        lblPassword.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        txtLogin =
-                new JTextField();
+        txtPassword = new JPasswordField();
+        UITheme.stylePasswordField(txtPassword);
+        txtPassword.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        txtPassword.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel lblPassword =
-                new JLabel("Contraseña:");
+        // Mensaje de error integrado
+        lblError = new JLabel(" ");
+        lblError.setFont(UITheme.FONT_SMALL);
+        lblError.setForeground(UITheme.COLOR_DANGER);
+        lblError.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        txtPassword =
-                new JPasswordField();
+        formPanel.add(lblLogin);
+        formPanel.add(Box.createVerticalStrut(4));
+        formPanel.add(txtLogin);
+        formPanel.add(Box.createVerticalStrut(12));
+        formPanel.add(lblPassword);
+        formPanel.add(Box.createVerticalStrut(4));
+        formPanel.add(txtPassword);
+        formPanel.add(Box.createVerticalStrut(6));
+        formPanel.add(lblError);
 
-        panelFormulario.add(lblLogin);
-        panelFormulario.add(txtLogin);
-        panelFormulario.add(lblPassword);
-        panelFormulario.add(txtPassword);
+        card.add(formPanel, BorderLayout.CENTER);
 
-        panelPrincipal.add(
-                panelFormulario,
-                BorderLayout.CENTER
-        );
+        // ==========================================
+        // BOTONES DE ACCIÓN
+        // ==========================================
+        JPanel actionsPanel = new JPanel();
+        actionsPanel.setLayout(new BoxLayout(actionsPanel, BoxLayout.Y_AXIS));
+        actionsPanel.setOpaque(false);
 
-        // ==============================
-        // BOTONES
-        // ==============================
+        ModernButton btnIngresar = new ModernButton("Iniciar Sesión", ModernButton.Variant.PRIMARY);
+        btnIngresar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        btnIngresar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton btnIngresar =
-                new JButton("Ingresar");
+        ModernButton btnRegistrarse = new ModernButton("Registrarse como nuevo usuario", ModernButton.Variant.OUTLINE);
+        btnRegistrarse.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        btnRegistrarse.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton btnRegistrarse =
-                new JButton("Registrarse");
+        JLabel lblFooter = new JLabel("© 2026 Universidad del Cauca • Popayán");
+        lblFooter.setFont(UITheme.FONT_SMALL);
+        lblFooter.setForeground(UITheme.COLOR_TEXT_MUTED);
+        lblFooter.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        btnIngresar.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        14
-                )
-        );
+        actionsPanel.add(btnIngresar);
+        actionsPanel.add(Box.createVerticalStrut(8));
+        actionsPanel.add(btnRegistrarse);
+        actionsPanel.add(Box.createVerticalStrut(14));
+        actionsPanel.add(lblFooter);
 
-        btnRegistrarse.setFont(
-                new Font(
-                        "Arial",
-                        Font.PLAIN,
-                        13
-                )
-        );
+        card.add(actionsPanel, BorderLayout.SOUTH);
 
-        JPanel panelBotones =
-                new JPanel(
-                        new GridLayout(
-                                2,
-                                1,
-                                5,
-                                8
-                        )
-                );
+        // Eventos
+        btnIngresar.addActionListener(e -> iniciarSesion());
+        btnRegistrarse.addActionListener(e -> abrirRegistro());
+        txtPassword.addActionListener(e -> iniciarSesion());
+        txtLogin.addActionListener(e -> txtPassword.requestFocusInWindow());
 
-        panelBotones.add(btnIngresar);
-        panelBotones.add(btnRegistrarse);
-
-        panelPrincipal.add(
-                panelBotones,
-                BorderLayout.SOUTH
-        );
-
-        // ==============================
-        // EVENTOS
-        // ==============================
-
-        btnIngresar.addActionListener(
-                e -> iniciarSesion()
-        );
-
-        btnRegistrarse.addActionListener(
-                e -> abrirRegistro()
-        );
-
-        txtPassword.addActionListener(
-                e -> iniciarSesion()
-        );
-
-        add(panelPrincipal);
+        add(card);
     }
 
     private void iniciarSesion() {
-
-        String login =
-                txtLogin.getText().trim();
-
-        String password =
-                new String(
-                        txtPassword.getPassword()
-                );
+        lblError.setText(" ");
+        String login = txtLogin.getText().trim();
+        String password = new String(txtPassword.getPassword());
 
         if (login.isBlank() || password.isBlank()) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Debe ingresar usuario y contraseña.",
-                    "Datos incompletos",
-                    JOptionPane.WARNING_MESSAGE
-            );
-
+            lblError.setText("⚠️ Ingrese su usuario y contraseña.");
             return;
         }
 
-        Usuario usuario =
-                authServices.iniciarSesion(
-                        login,
-                        password
-                );
+        Usuario usuario = authServices.iniciarSesion(login, password);
 
         if (usuario != null) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Bienvenido, "
-                            + usuario.getNombreCompleto(),
-                    "Inicio de sesión",
-                    JOptionPane.INFORMATION_MESSAGE
+            MenuFrame menuFrame = new MenuFrame(
+                    usuario,
+                    usuarioServices,
+                    authServices,
+                    preguntasController
             );
-
-            MenuFrame menuFrame =
-                    new MenuFrame(
-                            usuario,
-                            usuarioServices,
-                            authServices,
-                            preguntasController
-                    );
-
             menuFrame.setVisible(true);
-
             dispose();
-
         } else {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Usuario o contraseña incorrectos.\n"
-                            + "También puede que el usuario "
-                            + "esté inactivo.",
-                    "Error de autenticación",
-                    JOptionPane.ERROR_MESSAGE
-            );
-
+            lblError.setText("❌ Credenciales incorrectas o usuario inactivo.");
             txtPassword.setText("");
+            txtPassword.requestFocusInWindow();
         }
     }
 
     private void abrirRegistro() {
-
-        RegistroFrame registroFrame =
-                new RegistroFrame(
-                        usuarioServices,
-                        this
-                );
-
+        RegistroFrame registroFrame = new RegistroFrame(
+                usuarioServices,
+                this
+        );
         registroFrame.setVisible(true);
-
         setVisible(false);
     }
 }

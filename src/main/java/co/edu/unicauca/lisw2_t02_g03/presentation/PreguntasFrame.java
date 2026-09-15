@@ -4,30 +4,13 @@ import co.edu.unicauca.lisw2_t02_g03.domain.EstadoPregunta;
 import co.edu.unicauca.lisw2_t02_g03.domain.Pregunta;
 import co.edu.unicauca.lisw2_t02_g03.domain.ResultadoCambioEstado;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.util.List;
 
 /**
- * Vista principal del micro patrón MVC para la gestión de estados de preguntas.
+ * Vista principal del micro patrón MVC para la gestión de estados de preguntas, modernizada con UITheme.
  */
 public class PreguntasFrame extends JFrame {
 
@@ -49,10 +32,11 @@ public class PreguntasFrame extends JFrame {
     private final JTextField campoRespuesta = crearCampoSoloLectura();
     private final JTextField campoEstadoActual = crearCampoSoloLectura();
     private final JTextArea areaPregunta = crearAreaSoloLectura(4);
-    private final JTextArea areaOpciones = crearAreaSoloLectura(7);
-    private final JButton botonCargar = new JButton("Cargar pregunta");
-    private final JButton botonActualizar = new JButton("Actualizar estado");
-    private final JButton botonRefrescar = new JButton("Refrescar");
+    private final JTextArea areaOpciones = crearAreaSoloLectura(6);
+
+    private final ModernButton botonCargar = new ModernButton("Cargar Pregunta", ModernButton.Variant.PRIMARY);
+    private final ModernButton botonActualizar = new ModernButton("Actualizar Estado", ModernButton.Variant.SUCCESS);
+    private final ModernButton botonRefrescar = new ModernButton("Refrescar", ModernButton.Variant.OUTLINE);
 
     private boolean observadoresRegistrados;
 
@@ -70,17 +54,19 @@ public class PreguntasFrame extends JFrame {
     }
 
     private void configurarVentana() {
-        setTitle("Banco de Preguntas Saber Pro - Gestión de preguntas");
+        setTitle("Banco de Preguntas Saber Pro - Gestión de Estados (MVC)");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setMinimumSize(new Dimension(950, 680));
-        setSize(1150, 780);
+        setMinimumSize(new Dimension(980, 700));
+        setSize(1180, 800);
         setLocationRelativeTo(null);
         setResizable(true);
+        getContentPane().setBackground(UITheme.COLOR_BG);
     }
 
     private void crearInterfaz() {
-        JPanel raiz = new JPanel(new BorderLayout(10, 10));
-        raiz.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        JPanel raiz = new JPanel(new BorderLayout(12, 12));
+        raiz.setBorder(new EmptyBorder(14, 16, 14, 16));
+        raiz.setOpaque(false);
 
         raiz.add(crearPanelSeleccion(), BorderLayout.NORTH);
 
@@ -91,6 +77,8 @@ public class PreguntasFrame extends JFrame {
         division.setResizeWeight(0.58);
         division.setOneTouchExpandable(true);
         division.setContinuousLayout(true);
+        division.setBorder(null);
+        division.setOpaque(false);
 
         raiz.add(division, BorderLayout.CENTER);
         setContentPane(raiz);
@@ -105,11 +93,15 @@ public class PreguntasFrame extends JFrame {
     }
 
     private JPanel crearPanelSeleccion() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
-        panel.setBorder(BorderFactory.createTitledBorder("Seleccionar pregunta"));
+        ModernCard panel = new ModernCard(new FlowLayout(FlowLayout.LEFT, 12, 6));
 
-        comboPreguntas.setPreferredSize(new Dimension(410, 28));
-        panel.add(new JLabel("Pregunta:"));
+        comboPreguntas.setPreferredSize(new Dimension(460, 36));
+        UITheme.styleComboBox(comboPreguntas);
+
+        JLabel lblSel = new JLabel("Seleccionar Pregunta:");
+        lblSel.setFont(UITheme.FONT_REGULAR_BOLD);
+
+        panel.add(lblSel);
         panel.add(comboPreguntas);
         panel.add(botonCargar);
         panel.add(botonRefrescar);
@@ -117,10 +109,15 @@ public class PreguntasFrame extends JFrame {
     }
 
     private JPanel crearPanelFormulario() {
-        JPanel contenedor = new JPanel(new BorderLayout(8, 8));
-        contenedor.setBorder(BorderFactory.createTitledBorder("Formulario de pregunta"));
+        ModernCard contenedor = new ModernCard(new BorderLayout(8, 10));
+
+        JLabel lblTitForm = new JLabel("Formulario de Inspección y Actualización de Estado");
+        lblTitForm.setFont(UITheme.FONT_TITLE_SMALL);
+        lblTitForm.setForeground(UITheme.COLOR_PRIMARY);
+        contenedor.add(lblTitForm, BorderLayout.NORTH);
 
         JPanel campos = new JPanel(new GridBagLayout());
+        campos.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(3, 6, 3, 6);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -144,15 +141,26 @@ public class PreguntasFrame extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = fila;
         gbc.weightx = 0;
-        campos.add(new JLabel("Nuevo estado:"), gbc);
+        JLabel lblNuevo = new JLabel("Nuevo estado:");
+        lblNuevo.setFont(UITheme.FONT_REGULAR_BOLD);
+        campos.add(lblNuevo, gbc);
+
         gbc.gridx = 1;
         gbc.weightx = 1;
+        UITheme.styleComboBox(comboNuevoEstado);
         campos.add(comboNuevoEstado, gbc);
 
-        JPanel acciones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel acciones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        acciones.setOpaque(false);
         acciones.add(botonActualizar);
 
-        contenedor.add(new JScrollPane(campos), BorderLayout.CENTER);
+        JScrollPane scrollCampos = new JScrollPane(campos);
+        scrollCampos.setBorder(null);
+        scrollCampos.setOpaque(false);
+        scrollCampos.getViewport().setOpaque(false);
+        scrollCampos.getVerticalScrollBar().setUnitIncrement(16);
+
+        contenedor.add(scrollCampos, BorderLayout.CENTER);
         contenedor.add(acciones, BorderLayout.SOUTH);
         return contenedor;
     }
@@ -160,11 +168,20 @@ public class PreguntasFrame extends JFrame {
     private JPanel crearPanelObservadores() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 0));
-        estadisticasView.setMaximumSize(new Dimension(Integer.MAX_VALUE, 145));
-        graficaPastelView.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        panel.add(estadisticasView);
-        panel.add(graficaPastelView);
+        panel.setOpaque(false);
+        panel.setBorder(new EmptyBorder(0, 8, 0, 0));
+
+        ModernCard cardEstadisticas = new ModernCard(new BorderLayout());
+        cardEstadisticas.add(estadisticasView, BorderLayout.CENTER);
+        cardEstadisticas.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+
+        ModernCard cardPastel = new ModernCard(new BorderLayout());
+        cardPastel.add(graficaPastelView, BorderLayout.CENTER);
+        cardPastel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+
+        panel.add(cardEstadisticas);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(cardPastel);
         return panel;
     }
 
@@ -242,7 +259,7 @@ public class PreguntasFrame extends JFrame {
                 recargarBanco(id);
                 JOptionPane.showMessageDialog(
                         this,
-                        "Estado actualizado correctamente.",
+                        "Estado actualizado correctamente a " + nuevoEstado + ".",
                         "Gestión de preguntas",
                         JOptionPane.INFORMATION_MESSAGE);
             }
@@ -299,15 +316,14 @@ public class PreguntasFrame extends JFrame {
     private static JTextField crearCampoSoloLectura() {
         JTextField campo = new JTextField();
         campo.setEditable(false);
+        UITheme.styleTextField(campo);
         return campo;
     }
 
     private static JTextArea crearAreaSoloLectura(int filas) {
         JTextArea area = new JTextArea(filas, 36);
         area.setEditable(false);
-        area.setLineWrap(true);
-        area.setWrapStyleWord(true);
-        area.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
+        UITheme.styleTextArea(area);
         return area;
     }
 
@@ -320,7 +336,9 @@ public class PreguntasFrame extends JFrame {
         gbc.gridy = fila;
         gbc.gridx = 0;
         gbc.weightx = 0;
-        panel.add(new JLabel(etiqueta), gbc);
+        JLabel lbl = new JLabel(etiqueta);
+        lbl.setFont(UITheme.FONT_REGULAR_BOLD);
+        panel.add(lbl, gbc);
         gbc.gridx = 1;
         gbc.weightx = 1;
         panel.add(campo, gbc);
@@ -336,12 +354,16 @@ public class PreguntasFrame extends JFrame {
         gbc.gridx = 0;
         gbc.weightx = 0;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        panel.add(new JLabel(etiqueta), gbc);
+        JLabel lbl = new JLabel(etiqueta);
+        lbl.setFont(UITheme.FONT_REGULAR_BOLD);
+        panel.add(lbl, gbc);
         gbc.gridx = 1;
         gbc.weightx = 1;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        panel.add(new JScrollPane(area), gbc);
+        JScrollPane scroll = new JScrollPane(area);
+        UITheme.styleScrollPane(scroll);
+        panel.add(scroll, gbc);
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;

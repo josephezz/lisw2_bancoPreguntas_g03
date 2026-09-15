@@ -6,8 +6,12 @@ import co.edu.unicauca.lisw2_t02_g03.model.Usuario;
 import co.edu.unicauca.lisw2_t02_g03.services.UsuarioServices;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * Ventana de registro de usuario con diseño moderno estructurado y validación visual.
+ */
 public class RegistroFrame extends JFrame {
 
     private final UsuarioServices usuarioServices;
@@ -19,6 +23,8 @@ public class RegistroFrame extends JFrame {
     private JComboBox<EstadoUsuario> comboEstado;
     private JPasswordField txtPassword;
     private JPasswordField txtConfirmPassword;
+    private JLabel lblRolDescripcion;
+    private JLabel lblMensaje;
 
     public RegistroFrame(
             UsuarioServices usuarioServices,
@@ -32,302 +38,217 @@ public class RegistroFrame extends JFrame {
     }
 
     private void configurarVentana() {
-
-        setTitle("Registro de Usuario");
-        setSize(500, 600);
-
-        setDefaultCloseOperation(
-                JFrame.DISPOSE_ON_CLOSE
-        );
-
+        setTitle("Registro de Usuario - Banco de Preguntas Saber Pro");
+        setSize(560, 680);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+        getContentPane().setBackground(UITheme.COLOR_BG);
     }
 
     private void crearInterfaz() {
+        setLayout(new GridBagLayout());
 
-        JPanel panelPrincipal =
-                new JPanel(new BorderLayout(10, 10));
-
-        panelPrincipal.setBorder(
-                BorderFactory.createEmptyBorder(
-                        20, 35, 20, 35
-                )
-        );
+        ModernCard card = new ModernCard(new BorderLayout(0, 16));
+        card.setPreferredSize(new Dimension(500, 620));
+        card.setBorder(new EmptyBorder(22, 26, 20, 26));
 
         // ==========================================
-        // TITULO
+        // CABECERA
         // ==========================================
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setOpaque(false);
 
-        JLabel titulo =
-                new JLabel(
-                        "REGISTRAR USUARIO",
-                        SwingConstants.CENTER
-                );
+        JLabel lblEmblema = new JLabel("🏛️ UNIVERSIDAD DEL CAUCA");
+        lblEmblema.setFont(UITheme.FONT_SMALL_BOLD);
+        lblEmblema.setForeground(UITheme.COLOR_PRIMARY);
+        lblEmblema.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        titulo.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        23
-                )
-        );
+        JLabel lblTitulo = new JLabel("Crear Nueva Cuenta");
+        lblTitulo.setFont(UITheme.FONT_TITLE_LARGE);
+        lblTitulo.setForeground(UITheme.COLOR_PRIMARY_DARK);
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        panelPrincipal.add(
-                titulo,
-                BorderLayout.NORTH
-        );
+        JLabel lblSubtitulo = new JLabel("Complete los datos requeridos para registrarse en el sistema");
+        lblSubtitulo.setFont(UITheme.FONT_SMALL);
+        lblSubtitulo.setForeground(UITheme.COLOR_TEXT_MUTED);
+        lblSubtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        headerPanel.add(lblEmblema);
+        headerPanel.add(Box.createVerticalStrut(4));
+        headerPanel.add(lblTitulo);
+        headerPanel.add(Box.createVerticalStrut(4));
+        headerPanel.add(lblSubtitulo);
+
+        card.add(headerPanel, BorderLayout.NORTH);
 
         // ==========================================
         // FORMULARIO
         // ==========================================
-
-        JPanel formulario =
-                new JPanel(
-                        new GridLayout(
-                                12,
-                                1,
-                                5,
-                                5
-                        )
-                );
+        JPanel formPanel = new JPanel(new GridLayout(0, 1, 0, 8));
+        formPanel.setOpaque(false);
 
         // Login
-        formulario.add(
-                new JLabel("Login:")
-        );
-
+        JLabel lblLogin = new JLabel("Login de usuario:");
+        lblLogin.setFont(UITheme.FONT_REGULAR_BOLD);
         txtLogin = new JTextField();
+        UITheme.styleTextField(txtLogin);
 
-        formulario.add(txtLogin);
-
-        // Nombre
-        formulario.add(
-                new JLabel("Nombre completo:")
-        );
-
+        // Nombre Completo
+        JLabel lblNombre = new JLabel("Nombre completo:");
+        lblNombre.setFont(UITheme.FONT_REGULAR_BOLD);
         txtNombre = new JTextField();
+        UITheme.styleTextField(txtNombre);
 
-        formulario.add(txtNombre);
+        // Fila doble: Rol y Estado
+        JPanel panelRolEstado = new JPanel(new GridLayout(1, 2, 12, 0));
+        panelRolEstado.setOpaque(false);
 
-        // Rol
-        formulario.add(
-                new JLabel("Rol:")
-        );
+        JPanel panelRol = new JPanel(new BorderLayout(0, 4));
+        panelRol.setOpaque(false);
+        JLabel lblRol = new JLabel("Rol en el sistema:");
+        lblRol.setFont(UITheme.FONT_REGULAR_BOLD);
+        comboRol = new JComboBox<>(Rol.values());
+        UITheme.styleComboBox(comboRol);
+        panelRol.add(lblRol, BorderLayout.NORTH);
+        panelRol.add(comboRol, BorderLayout.CENTER);
 
-        comboRol =
-                new JComboBox<>(
-                        Rol.values()
-                );
+        JPanel panelEstado = new JPanel(new BorderLayout(0, 4));
+        panelEstado.setOpaque(false);
+        JLabel lblEstado = new JLabel("Estado:");
+        lblEstado.setFont(UITheme.FONT_REGULAR_BOLD);
+        comboEstado = new JComboBox<>(EstadoUsuario.values());
+        UITheme.styleComboBox(comboEstado);
+        comboEstado.setSelectedItem(EstadoUsuario.ACTIVO);
+        panelEstado.add(lblEstado, BorderLayout.NORTH);
+        panelEstado.add(comboEstado, BorderLayout.CENTER);
 
-        formulario.add(comboRol);
+        panelRolEstado.add(panelRol);
+        panelRolEstado.add(panelEstado);
 
-        // Estado
-        formulario.add(
-                new JLabel("Estado:")
-        );
+        // Descripción dinámica de rol
+        lblRolDescripcion = new JLabel(" ");
+        lblRolDescripcion.setFont(UITheme.FONT_SMALL);
+        lblRolDescripcion.setForeground(UITheme.COLOR_PRIMARY);
+        actualizarDescripcionRol();
+        comboRol.addActionListener(e -> actualizarDescripcionRol());
 
-        comboEstado =
-                new JComboBox<>(
-                        EstadoUsuario.values()
-                );
+        // Contraseñas
+        JLabel lblPass = new JLabel("Contraseña:");
+        lblPass.setFont(UITheme.FONT_REGULAR_BOLD);
+        txtPassword = new JPasswordField();
+        UITheme.stylePasswordField(txtPassword);
 
-        // Por seguridad/usabilidad, dejamos ACTIVO
-        // como opción inicial.
-        comboEstado.setSelectedItem(
-                EstadoUsuario.ACTIVO
-        );
+        JLabel lblConfirm = new JLabel("Confirmar contraseña:");
+        lblConfirm.setFont(UITheme.FONT_REGULAR_BOLD);
+        txtConfirmPassword = new JPasswordField();
+        UITheme.stylePasswordField(txtConfirmPassword);
 
-        formulario.add(comboEstado);
+        // Mensaje de estado
+        lblMensaje = new JLabel(" ");
+        lblMensaje.setFont(UITheme.FONT_SMALL);
+        lblMensaje.setForeground(UITheme.COLOR_DANGER);
 
-        // Contraseña
-        formulario.add(
-                new JLabel("Contraseña:")
-        );
+        formPanel.add(lblLogin);
+        formPanel.add(txtLogin);
+        formPanel.add(lblNombre);
+        formPanel.add(txtNombre);
+        formPanel.add(panelRolEstado);
+        formPanel.add(lblRolDescripcion);
+        formPanel.add(lblPass);
+        formPanel.add(txtPassword);
+        formPanel.add(lblConfirm);
+        formPanel.add(txtConfirmPassword);
+        formPanel.add(lblMensaje);
 
-        txtPassword =
-                new JPasswordField();
-
-        formulario.add(txtPassword);
-
-        // Confirmar contraseña
-        formulario.add(
-                new JLabel("Confirmar contraseña:")
-        );
-
-        txtConfirmPassword =
-                new JPasswordField();
-
-        formulario.add(txtConfirmPassword);
-
-        panelPrincipal.add(
-                formulario,
-                BorderLayout.CENTER
-        );
-
-        // ==========================================
-        // BOTONES
-        // ==========================================
-
-        JButton btnRegistrar =
-                new JButton("Registrar");
-
-        JButton btnVolver =
-                new JButton("Volver");
-
-        JPanel panelBotones =
-                new JPanel(
-                        new GridLayout(
-                                1,
-                                2,
-                                10,
-                                0
-                        )
-                );
-
-        panelBotones.add(btnRegistrar);
-        panelBotones.add(btnVolver);
-
-        panelPrincipal.add(
-                panelBotones,
-                BorderLayout.SOUTH
-        );
+        card.add(formPanel, BorderLayout.CENTER);
 
         // ==========================================
-        // EVENTOS
+        // BOTONES DE ACCIÓN
         // ==========================================
+        JPanel actionsPanel = new JPanel(new GridLayout(1, 2, 12, 0));
+        actionsPanel.setOpaque(false);
 
-        btnRegistrar.addActionListener(
-                e -> registrarUsuario()
-        );
+        ModernButton btnRegistrar = new ModernButton("Completar Registro", ModernButton.Variant.SUCCESS);
+        ModernButton btnVolver = new ModernButton("Volver al Login", ModernButton.Variant.SECONDARY);
 
-        btnVolver.addActionListener(
-                e -> volver()
-        );
+        actionsPanel.add(btnRegistrar);
+        actionsPanel.add(btnVolver);
 
-        add(panelPrincipal);
+        card.add(actionsPanel, BorderLayout.SOUTH);
+
+        // Eventos
+        btnRegistrar.addActionListener(e -> registrarUsuario());
+        btnVolver.addActionListener(e -> volver());
+
+        add(card);
+    }
+
+    private void actualizarDescripcionRol() {
+        Rol rol = (Rol) comboRol.getSelectedItem();
+        if (rol == null) return;
+        String desc = switch (rol) {
+            case ADMINISTRADOR -> "Permisos completos: Gestión de usuarios y control de plugins.";
+            case AUTOR -> "Crea y genera preguntas con plugins, y envía a revisión.";
+            case REVISOR -> "Bandeja de revisión: Evalúa, aprueba o rechaza preguntas con notas.";
+            case DOCENTE -> "Consulta métricas estadísticas y gráficas del banco.";
+            case ESTUDIANTE -> "Realiza simulacros interactivos de evaluación tipo Saber Pro.";
+        };
+        lblRolDescripcion.setText("ℹ️ " + desc);
     }
 
     private void registrarUsuario() {
+        lblMensaje.setText(" ");
+        String login = txtLogin.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        Rol rol = (Rol) comboRol.getSelectedItem();
+        EstadoUsuario estado = (EstadoUsuario) comboEstado.getSelectedItem();
+        String password = new String(txtPassword.getPassword());
+        String confirmPassword = new String(txtConfirmPassword.getPassword());
 
-        String login =
-                txtLogin.getText().trim();
-
-        String nombre =
-                txtNombre.getText().trim();
-
-        Rol rol =
-                (Rol) comboRol.getSelectedItem();
-
-        EstadoUsuario estado =
-                (EstadoUsuario) comboEstado.getSelectedItem();
-
-        String password =
-                new String(
-                        txtPassword.getPassword()
-                );
-
-        String confirmPassword =
-                new String(
-                        txtConfirmPassword.getPassword()
-                );
-
-        // ==========================================
-        // VALIDACIONES BASICAS
-        // ==========================================
-
-        if (
-                login.isBlank()
-                        || nombre.isBlank()
-                        || password.isBlank()
-                        || confirmPassword.isBlank()
-        ) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Todos los campos son obligatorios.",
-                    "Datos incompletos",
-                    JOptionPane.WARNING_MESSAGE
-            );
-
+        if (login.isBlank() || nombre.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+            lblMensaje.setText("⚠️ Todos los campos son obligatorios.");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Las contraseñas no coinciden.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-
+            lblMensaje.setText("❌ Las contraseñas no coinciden.");
+            txtConfirmPassword.setText("");
+            txtConfirmPassword.requestFocusInWindow();
             return;
         }
 
-        // ==========================================
-        // CREAR USUARIO
-        // ==========================================
+        Usuario usuario = new Usuario(login, nombre, rol, estado, password);
 
-        Usuario usuario =
-                new Usuario(
-                        login,
-                        nombre,
-                        rol,
-                        estado,
-                        password
-                );
-
-        boolean creado =
-                usuarioServices.crearUsuario(
-                        usuario
-                );
+        boolean creado = usuarioServices.crearUsuario(usuario);
 
         if (creado) {
-
             JOptionPane.showMessageDialog(
                     this,
-                    "Usuario registrado correctamente.",
-                    "Registro exitoso",
+                    "Usuario " + nombre + " (" + login + ") registrado con éxito.\nAhora puede iniciar sesión con su contraseña.",
+                    "Registro Exitoso",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             limpiarCampos();
-
             volver();
-
         } else {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "No fue posible registrar el usuario.\n"
-                            + "El login puede existir o "
-                            + "los datos pueden ser inválidos.",
-                    "Error de registro",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            lblMensaje.setText("❌ No fue posible registrar: el usuario ya existe o la contraseña no cumple requisitos.");
         }
     }
 
     private void limpiarCampos() {
-
         txtLogin.setText("");
         txtNombre.setText("");
-
         comboRol.setSelectedIndex(0);
-
-        comboEstado.setSelectedItem(
-                EstadoUsuario.ACTIVO
-        );
-
+        comboEstado.setSelectedItem(EstadoUsuario.ACTIVO);
         txtPassword.setText("");
         txtConfirmPassword.setText("");
+        lblMensaje.setText(" ");
     }
 
     private void volver() {
-
         dispose();
-
         if (ventanaAnterior != null) {
             ventanaAnterior.setVisible(true);
         }

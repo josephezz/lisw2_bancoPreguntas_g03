@@ -27,72 +27,74 @@ import javax.swing.SwingUtilities;
 
 /**
  * Composition root de la aplicación.
- * Configura e inyecta: BD, usuarios, autenticación, microkernel, plugins y pipeline.
+ * Configura e inyecta: BD, usuarios, autenticación, microkernel, plugins y
+ * pipeline.
  */
 public class Main {
 
-    public static void main(String[] args) {
-        // ============================
-        // Base de datos y usuarios
-        // ============================
-        DataBaseManager databaseManager = new DataBaseManager();
-        DataBaseInitializer databaseInitializer = new DataBaseInitializer(databaseManager);
-        databaseInitializer.initialize();
+        public static void main(String[] args) {
+                // ============================
+                // Base de datos y usuarios
+                // ============================
+                DataBaseManager databaseManager = new DataBaseManager();
+                DataBaseInitializer databaseInitializer = new DataBaseInitializer(databaseManager);
+                databaseInitializer.initialize();
 
-        InterfaceUsuarioRepository usuarioRepository = new UsuarioRepository(databaseManager);
-        PasswordValidator passwordValidator = new PasswordValidator();
-        PasswordHasher passwordHasher = new PasswordHasher();
+                InterfaceUsuarioRepository usuarioRepository = new UsuarioRepository(databaseManager);
+                PasswordValidator passwordValidator = new PasswordValidator();
+                PasswordHasher passwordHasher = new PasswordHasher();
 
-        UsuarioServices usuarioServices = new UsuarioServices(
-                usuarioRepository,
-                passwordValidator::isValid,
-                passwordHasher::hash);
+                UsuarioServices usuarioServices = new UsuarioServices(
+                                usuarioRepository,
+                                passwordValidator::isValid,
+                                passwordHasher::hash);
 
-        AuthServices authServices = new AuthServices(
-                usuarioRepository,
-                passwordHasher::verify);
+                AuthServices authServices = new AuthServices(
+                                usuarioRepository,
+                                passwordHasher::verify);
 
-        // ============================
-        // Banco de preguntas (dominio)
-        // ============================
-        PreguntaRepository preguntaRepository = new PreguntaImplRepository();
-        PreguntaService preguntaService = new PreguntaService(preguntaRepository);
+                // ============================
+                // Banco de preguntas (dominio)
+                // ============================
+                PreguntaRepository preguntaRepository = new PreguntaImplRepository();
+                PreguntaService preguntaService = new PreguntaService(preguntaRepository);
 
-        // ============================
-        // Microkernel + Plugins (reflexión)
-        // ============================
-        PluginLoader pluginLoader = new PluginLoader();
-        PluginRegistry pluginRegistry = new PluginRegistry();
-        PluginManager pluginManager = new PluginManager(pluginLoader, pluginRegistry);
+                // ============================
+                // Microkernel + Plugins (reflexión)
+                // ============================
+                PluginLoader pluginLoader = new PluginLoader();
+                PluginRegistry pluginRegistry = new PluginRegistry();
+                PluginManager pluginManager = new PluginManager(pluginLoader, pluginRegistry);
 
-        QuestionMicroKernel microKernel = new QuestionMicroKernel(preguntaService, pluginManager);
-        int pluginsCargados = microKernel.inicializar();
-        System.out.println("Plugins cargados mediante reflexión: " + pluginsCargados);
+                QuestionMicroKernel microKernel = new QuestionMicroKernel(preguntaService, pluginManager);
+                int pluginsCargados = microKernel.inicializar();
+                System.out.println("Plugins cargados mediante reflexión: " + pluginsCargados);
 
-        // ============================
-        // Pipeline Tuberías/Filtros
-        // ============================
-        QuestionPipeline pipeline = new QuestionPipeline()
-                .agregarFiltro(new ContentValidationFilter())
-                .agregarFiltro(new OptionsValidationFilter())
-                .agregarFiltro(new ClassificationFilter())
-                .agregarFiltro(new CorrectAnswerValidationFilter());
+                // ============================
+                // Pipeline Tuberías/Filtros
+                // ============================
+                QuestionPipeline pipeline = new QuestionPipeline()
+                                .agregarFiltro(new ContentValidationFilter())
+                                .agregarFiltro(new OptionsValidationFilter())
+                                .agregarFiltro(new ClassificationFilter())
+                                .agregarFiltro(new CorrectAnswerValidationFilter());
 
-        // ============================
-        // Controlador con todo integrado
-        // ============================
-        PreguntasController preguntasController = new PreguntasController(
-                preguntaService, microKernel, pipeline);
+                // ============================
+                // Controlador con todo integrado
+                // ============================
+                PreguntasController preguntasController = new PreguntasController(
+                                preguntaService, microKernel, pipeline);
 
-        // ============================
-        // Interfaz Swing
-        // ============================
-        SwingUtilities.invokeLater(() -> {
-            LoginFrame loginFrame = new LoginFrame(
-                    authServices,
-                    usuarioServices,
-                    preguntasController);
-            loginFrame.setVisible(true);
-        });
-    }
+                // ============================
+                // Interfaz Swing
+                // ============================
+                SwingUtilities.invokeLater(() -> {
+                        co.edu.unicauca.lisw2_t02_g03.presentation.UITheme.aplicarLookAndFeel();
+                        LoginFrame loginFrame = new LoginFrame(
+                                        authServices,
+                                        usuarioServices,
+                                        preguntasController);
+                        loginFrame.setVisible(true);
+                });
+        }
 }
